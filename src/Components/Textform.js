@@ -1,51 +1,73 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 
 export default function Textform(props) {
-    const changeUppercase = ()=> {
+    const changeUppercase = () => {
         setText(text.toUpperCase());
+        props.showAlert('Converted to uppercase', 'Success');
     }
-    const changeLowercase = ()=> {
+    const changeLowercase = () => {
         setText(text.toLowerCase());
+        props.showAlert('Converted to lowercase', 'Success');
     }
-    const handleOnchange = (event)=> {
-        setText(event.target.value);
+    const clearText = () => {
+        setText('');
+        props.showAlert('Text Cleared', 'Success');
     }
-    const uppercase = ()=> {
-        var array1 = text.split(' ');
+    const copyText = () => {
+        let copy = document.getElementById('TextBox')
+        // copy.select();  //it selects the text like ctrl+A
+        navigator.clipboard.writeText(copy.value);
+        props.showAlert('Text Copied', 'Success');
+    }
+    const removeExtraSpace = () => {
+        let newText = text.split(/[ ]+/);
+        newText = newText.join(' ')
+        setText(newText.trim());
+        props.showAlert('Extra space removed', 'Success');
+    }
+    const uppercase = () => {
+        var array1 = text.split(/\s+/);
         var newarray1 = [];
-          
-        for(var x = 0; x < array1.length; x++){
-            newarray1.push(array1[x].charAt(0).toUpperCase()+array1[x].slice(1));
+
+        for (var x = 0; x < array1.length; x++) {
+            newarray1.push(array1[x].charAt(0).toUpperCase() + array1[x].slice(1).toLowerCase());
         }
         setText(newarray1.join(' '));
+        props.showAlert('Converted every first letter to uppercase', 'Success');
     }
-    const [text,setText] = useState('');
+    const handleOnchange = (event) => {
+        setText(event.target.value);
+    }
 
+    const [text, setText] = useState('');
 
     return (
-        <>
-        <div>
-            <div className="mb-3">
-                <label htmlFor="exampleFormControlTextarea1" className="form-label">{props.heading}</label>
-                <textarea className="form-control" value={text} onChange={handleOnchange} id="exampleFormControlTextarea1" rows="8"></textarea>
+        <div className="container my-1">
+            <div>
+                <div className="mb-3 text-center">
+                    <label htmlFor="exampleFormControlTextarea1" className={`form-label text-${props.mode === 'light' ? 'dark' : 'light'}`} ><h2>{props.heading}</h2></label>
+                    <textarea className={`form-control bg-${props.mode} text-${props.mode === 'light' ? 'dark' : 'light'}`} value={text} onChange={handleOnchange} id="TextBox" rows="8"></textarea>
+                </div>
+                <button disabled={text.length === 0} className="btn btn-primary m-2" onClick={changeUppercase}>Convert to UpperCase</button>
+                <button disabled={text.length === 0} className="btn btn-primary m-2" onClick={changeLowercase}>Convert to LowerCase</button>
+                <button disabled={text.length === 0} className="btn btn-primary m-2" onClick={clearText}>Clear Text</button>
+                <button disabled={text.length === 0} className="btn btn-primary m-2" onClick={copyText}>Copy Text</button>
+                <button disabled={text.length === 0} className="btn btn-primary m-2" onClick={removeExtraSpace}>Remove Extra Space</button>
+                <button disabled={text.length === 0} className="btn btn-primary m-2" onClick={uppercase}>Make Text Better</button>
             </div>
-            <button className="btn btn-primary mx-2" onClick={changeUppercase}>Convert to UpperCase</button>
-            <button className="btn btn-primary mx-2" onClick={changeLowercase}>Convert to LowerCase</button>   
-            <button className="btn btn-primary mx-2" onClick={uppercase}>Convert first letter of each word to UpperCase</button>   
+            <div className={`container my-2 text-${props.mode === 'light' ? 'dark' : 'light'}`}>
+                <h2>Your Text Summary</h2>
+                <p>
+                    {text.length > 0 ? text.trim().split(/\s+/).length : 0} words and {text.split(" ").join("").length} characters
+                </p>
+                <p>
+                    It takes {text.length > 0 ? 0.008 * text.trim().split(' ').length : 0} minutes to read your text for an average person
+                </p>
+                <h3>Preview</h3>
+                <p>
+                    {text.length > 0 ? text : "Enter some text to preview"}
+                </p>
+            </div>
         </div>
-        <div className="container my-2">
-            <h2>Your Text Summary</h2>
-            <p>
-                {text.split(' ').length} words and {text.length} characters
-            </p>
-            <p>
-                It takes {0.008*text.split(' ').length} minutes to read your text for an average person
-            </p>
-            <h3>Preview</h3>
-            <p>
-                {text}
-            </p>
-        </div>
-        </>
     )
 }
