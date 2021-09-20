@@ -1,6 +1,6 @@
 {
-  "homepage": "http://amitsarmal.github.io/textutils",
   "name": "project1",
+  "homepage": "http://amitsarmal.github.io/textutils",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
